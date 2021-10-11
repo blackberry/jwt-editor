@@ -50,6 +50,7 @@ public class EditorView implements IMessageEditorTab {
     private boolean editable;
     private int mode;
 
+    private JFrame parent;
     private JTabbedPane tabbedPane;
     private JComboBox<String> comboBoxJOSEObject;
     private JButton buttonSign;
@@ -86,11 +87,13 @@ public class EditorView implements IMessageEditorTab {
 
     }
 
-    public EditorView(PresenterStore presenters) {
-        this(presenters, null, true);
+    public EditorView(JFrame parent, PresenterStore presenters) {
+        this(parent, presenters, null, true);
     }
 
-    public EditorView(PresenterStore presenters, IExtensionHelpers helpers, boolean editable) {
+    public EditorView(JFrame parent, PresenterStore presenters, IExtensionHelpers helpers, boolean editable) {
+        this.parent = parent;
+
         presenter = new EditorPresenter(this, presenters);
         this.helpers = helpers;
         this.editable = editable;
@@ -516,6 +519,14 @@ public class EditorView implements IMessageEditorTab {
      */
     public byte[] getSelectedData() {
         return null;
+    }
+
+    /**
+     * Get the view's parent JFrame
+     * @return parent JFrame
+     */
+    public JFrame getParent() {
+        return parent;
     }
 
     /**

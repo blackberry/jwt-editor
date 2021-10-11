@@ -90,7 +90,7 @@ public class JWTEditor {
     private static void gui(){
         // Create a new window, load and display the StandaloneView
         JFrame frame = new JFrame(Utils.getResourceString("tool_name"));
-        StandaloneView standaloneView = new StandaloneView(new PresenterStore());
+        StandaloneView standaloneView = new StandaloneView(frame, new PresenterStore());
         frame.getContentPane().add(standaloneView.getPanel());
         frame.setMinimumSize(new Dimension(1000,700));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

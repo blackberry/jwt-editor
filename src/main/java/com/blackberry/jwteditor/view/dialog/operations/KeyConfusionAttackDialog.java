@@ -50,8 +50,8 @@ public class KeyConfusionAttackDialog extends JDialog {
      * @param signingKeys the signing keys available
      * @param jws the content to sign
      */
-    public KeyConfusionAttackDialog(List<Key> signingKeys, JWS jws) {
-
+    public KeyConfusionAttackDialog(JFrame parent, List<Key> signingKeys, JWS jws) {
+        super(parent);
         this.jws = jws;
 
         setContentPane(contentPane);

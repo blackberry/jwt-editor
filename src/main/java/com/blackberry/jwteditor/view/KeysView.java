@@ -39,6 +39,7 @@ import java.util.ArrayList;
 public class KeysView implements ITab {
     private KeysPresenter presenter;
 
+    private JFrame parent;
     private JButton buttonNewSymmetric;
     private JButton buttonNewRSA;
     private JButton buttonNewEC;
@@ -59,11 +60,12 @@ public class KeysView implements ITab {
 
     }
 
-    public KeysView(PresenterStore presenters, KeysModel keysModel){
-        this(presenters, null, keysModel);
+    public KeysView(JFrame parent, PresenterStore presenters, KeysModel keysModel){
+        this(parent, presenters, null, keysModel);
     }
 
-    public KeysView(PresenterStore presenters, IBurpExtenderCallbacks callbacks, KeysModel keysModel) {
+    public KeysView(JFrame parent, PresenterStore presenters, IBurpExtenderCallbacks callbacks, KeysModel keysModel) {
+        this.parent = parent;
         // Initialise the presenter
         presenter = new KeysPresenter(this, presenters, callbacks, keysModel);
 
@@ -294,6 +296,14 @@ public class KeysView implements ITab {
 
     public void setTableModel(KeysTableModel model){
         tableKeys.setModel(model);
+    }
+
+    /**
+     * Get the view's parent JFrame
+     * @return parent JFrame
+     */
+    public JFrame getParent() {
+        return parent;
     }
 
 }

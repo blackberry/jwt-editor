@@ -41,13 +41,15 @@ public class StandaloneView {
 
     private final StandalonePresenter presenter;
 
+    private final JFrame parent;
     private JPanel panel;
     private EntryView entryView;
     private EditorView editorView;
     private KeysView keysView;
     private JTabbedPane tabbedPane;
 
-    public StandaloneView(PresenterStore presenters){
+    public StandaloneView(JFrame parent, PresenterStore presenters){
+        this.parent = parent;
         this.presenters = presenters;
 
         // Initialise the presenter
@@ -80,8 +82,8 @@ public class StandaloneView {
      * Custom form initialisation
      */
     private void createUIComponents() {
-        entryView = new EntryView(presenters);
-        editorView = new EditorView(presenters);
+        entryView = new EntryView(parent, presenters);
+        editorView = new EditorView(parent, presenters);
 
         // Get the storage directory for the keystore (~/.jwt-editor) and create it if it doesn't exist
         Path keys_dir = Utils.getKeysDir();
@@ -105,7 +107,7 @@ public class StandaloneView {
             keysModel = new KeysModel();
         }
 
-        keysView = new KeysView(presenters, keysModel);
+        keysView = new KeysView(parent, presenters, keysModel);
     }
 
     /**
@@ -115,5 +117,15 @@ public class StandaloneView {
     public JPanel getPanel() {
         return panel;
     }
+
+    /**
+     * Get the view's parent JFrame
+     * @return parent JFrame
+     */
+    @SuppressWarnings("unused")
+    public JFrame getParent() {
+        return parent;
+    }
+
 
 }

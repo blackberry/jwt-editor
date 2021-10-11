@@ -61,8 +61,8 @@ public class SignDialog extends JDialog {
      * @param jws the content to sign
      * @param mode whether the dialog should be used for normal signing, or the embedded JWK attack
      */
-    public SignDialog(List<Key> signingKeys, JWS jws, Mode mode) {
-
+    public SignDialog(JFrame parent, List<Key> signingKeys, JWS jws, Mode mode) {
+        super(parent);
         this.jws = jws;
         this.mode = mode;
 

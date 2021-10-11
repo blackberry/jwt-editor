@@ -292,7 +292,7 @@ public class EditorPresenter extends Presenter {
         }
 
         // Create the key confusion attack dialog with the JWS currently in the editor fields
-        KeyConfusionAttackDialog keyConfusionAttackDialog = new KeyConfusionAttackDialog(verificationKeys, getJWS());
+        KeyConfusionAttackDialog keyConfusionAttackDialog = new KeyConfusionAttackDialog(view.getParent(), verificationKeys, getJWS());
         keyConfusionAttackDialog.pack();
         keyConfusionAttackDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(view.getUiComponent()));
         keyConfusionAttackDialog.setVisible(true);
@@ -336,7 +336,7 @@ public class EditorPresenter extends Presenter {
         }
 
         // Create a new signing dialog
-        SignDialog signDialog = new SignDialog(keysPresenter.getSigningKeys(), getJWS(), mode);
+        SignDialog signDialog = new SignDialog(view.getParent(), keysPresenter.getSigningKeys(), getJWS(), mode);
         signDialog.pack();
         signDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(view.getUiComponent()));
         signDialog.setVisible(true);
@@ -384,7 +384,7 @@ public class EditorPresenter extends Presenter {
         }
 
         // Show the encryption dialog
-        EncryptDialog encryptDialog = new EncryptDialog(getJWS(), keysPresenter.getEncryptionKeys());
+        EncryptDialog encryptDialog = new EncryptDialog(view.getParent(), getJWS(), keysPresenter.getEncryptionKeys());
         encryptDialog.pack();
         encryptDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(view.getUiComponent()));
         encryptDialog.setVisible(true);

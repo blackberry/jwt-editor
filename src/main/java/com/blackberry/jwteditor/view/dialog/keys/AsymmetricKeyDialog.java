@@ -70,23 +70,24 @@ public class AsymmetricKeyDialog extends KeyDialog {
     private final Mode mode;
     private JWK jwk;
 
-    public AsymmetricKeyDialog(PresenterStore presenters, RSAKey rsaKey){
-        this(presenters, Mode.RSA, rsaKey);
+    public AsymmetricKeyDialog(JFrame parent, PresenterStore presenters, RSAKey rsaKey){
+        this(parent, presenters, Mode.RSA, rsaKey);
     }
 
-    public AsymmetricKeyDialog(PresenterStore presenters, ECKey ecKey){
-        this(presenters, Mode.EC, ecKey);
+    public AsymmetricKeyDialog(JFrame parent, PresenterStore presenters, ECKey ecKey){
+        this(parent, presenters, Mode.EC, ecKey);
     }
 
-    public AsymmetricKeyDialog(PresenterStore presenters, OctetKeyPair octetKeyPair){
-        this(presenters, Mode.OKP, octetKeyPair);
+    public AsymmetricKeyDialog(JFrame parent, PresenterStore presenters, OctetKeyPair octetKeyPair){
+        this(parent, presenters, Mode.OKP, octetKeyPair);
     }
 
-    public AsymmetricKeyDialog(PresenterStore presenters, Mode mode){
-        this(presenters, mode, null);
+    public AsymmetricKeyDialog(JFrame parent, PresenterStore presenters, Mode mode){
+        this(parent, presenters, mode, null);
     }
 
-    private AsymmetricKeyDialog(PresenterStore presenters, Mode mode, JWK jwk) {
+    private AsymmetricKeyDialog(JFrame parent, PresenterStore presenters, Mode mode, JWK jwk) {
+        super(parent);
         this.mode = mode;
         this.jwk = jwk;
         this.presenters = presenters;
