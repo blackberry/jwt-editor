@@ -45,16 +45,17 @@ public class PasswordDialog extends KeyDialog {
 
     PasswordKey key = null;
 
-    public PasswordDialog(PresenterStore presenters){
-        this(presenters, UUID.randomUUID().toString(), "", 8, 1000);
+    public PasswordDialog(JFrame parent, PresenterStore presenters){
+        this(parent, presenters, UUID.randomUUID().toString(), "", 8, 1000);
         originalId = null;
     }
 
-    public PasswordDialog(PresenterStore presenters, PasswordKey key){
-        this(presenters, key.getID(), key.getPassword(), key.getSaltLength(), key.getIterations());
+    public PasswordDialog(JFrame parent, PresenterStore presenters, PasswordKey key){
+        this(parent, presenters, key.getID(), key.getPassword(), key.getSaltLength(), key.getIterations());
     }
 
-    private PasswordDialog(PresenterStore presenters, String keyId, String password, int saltLength, int iterations) {
+    private PasswordDialog(JFrame parent, PresenterStore presenters, String keyId, String password, int saltLength, int iterations) {
+        super(parent);
         this.presenters = presenters;
         originalId = keyId;
 

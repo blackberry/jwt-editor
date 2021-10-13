@@ -33,6 +33,10 @@ public abstract class KeyDialog extends JDialog {
     protected PresenterStore presenters;
     protected String originalId;
 
+    public KeyDialog(JFrame parent){
+        super(parent);
+    }
+
     /**
      * Get the key generated/edited by the dialog
      * @return the new/modified key

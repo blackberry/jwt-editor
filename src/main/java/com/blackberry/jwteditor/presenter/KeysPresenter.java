@@ -84,19 +84,19 @@ public class KeysPresenter extends Presenter {
         if(key instanceof JWKKey) {
             JWK jwk = ((JWKKey) key).getJWK();
             if (jwk instanceof RSAKey) {
-                d = new AsymmetricKeyDialog(presenters, (RSAKey) jwk);
+                d = new AsymmetricKeyDialog(view.getParent(), presenters, (RSAKey) jwk);
             } else if (jwk instanceof ECKey) {
-                d = new AsymmetricKeyDialog(presenters, (ECKey) jwk);
+                d = new AsymmetricKeyDialog(view.getParent(), presenters, (ECKey) jwk);
             } else if (jwk instanceof OctetKeyPair) {
-                d = new AsymmetricKeyDialog(presenters, (OctetKeyPair) jwk);
+                d = new AsymmetricKeyDialog(view.getParent(), presenters, (OctetKeyPair) jwk);
             } else if (jwk instanceof OctetSequenceKey) {
-                d = new SymmetricKeyDialog(presenters, (OctetSequenceKey) jwk);
+                d = new SymmetricKeyDialog(view.getParent(), presenters, (OctetSequenceKey) jwk);
             } else {
                 return;
             }
         }
         else if(key instanceof PasswordKey){
-            d = new PasswordDialog(presenters, (PasswordKey) key);
+            d = new PasswordDialog(view.getParent(), presenters, (PasswordKey) key);
         }
         else {
             return;
@@ -172,35 +172,35 @@ public class KeysPresenter extends Presenter {
      * Handler for button clicks for new symmetric keys
      */
     public void onButtonNewSymmetricClick() {
-        onButtonNewClicked(new SymmetricKeyDialog(presenters, null));
+        onButtonNewClicked(new SymmetricKeyDialog(view.getParent(), presenters, null));
     }
 
     /**
      * Handler for button clicks for new RSA keys
      */
     public void onButtonNewRSAClick() {
-        onButtonNewClicked(new AsymmetricKeyDialog(presenters, AsymmetricKeyDialog.Mode.RSA));
+        onButtonNewClicked(new AsymmetricKeyDialog(view.getParent(), presenters, AsymmetricKeyDialog.Mode.RSA));
     }
 
     /**
      * Handler for button clicks for new EC keys
      */
     public void onButtonNewECClick() {
-        onButtonNewClicked(new AsymmetricKeyDialog(presenters, AsymmetricKeyDialog.Mode.EC));
+        onButtonNewClicked(new AsymmetricKeyDialog(view.getParent(), presenters, AsymmetricKeyDialog.Mode.EC));
     }
 
     /**
      * Handler for button clicks for new OKPs
      */
     public void onButtonNewOKPClick() {
-        onButtonNewClicked(new AsymmetricKeyDialog(presenters, AsymmetricKeyDialog.Mode.OKP));
+        onButtonNewClicked(new AsymmetricKeyDialog(view.getParent(), presenters, AsymmetricKeyDialog.Mode.OKP));
     }
 
     /**
      * Handler for button clicks for new passwords
      */
     public void onButtonNewPasswordClick() {
-        onButtonNewClicked(new PasswordDialog(presenters));
+        onButtonNewClicked(new PasswordDialog(view.getParent(), presenters));
     }
 
     /**

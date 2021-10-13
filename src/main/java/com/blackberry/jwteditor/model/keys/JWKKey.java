@@ -22,7 +22,6 @@ import com.blackberry.jwteditor.cryptography.okp.OKPDecrypter;
 import com.blackberry.jwteditor.cryptography.okp.OKPEncrypter;
 import com.blackberry.jwteditor.cryptography.okp.OKPSigner;
 import com.blackberry.jwteditor.cryptography.okp.OKPVerifier;
-import com.blackberry.jwteditor.utils.Utils;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.*;
 import com.nimbusds.jose.jwk.*;
@@ -426,6 +425,7 @@ public class JWKKey extends Key {
      *
      * @return the nimbus-jose JWSSigner to perform the signing operation
      */
+    @SuppressWarnings("deprecation")
     public JWSSigner getSigner() throws JOSEException {
         switch (keyType){
             case RSA:

@@ -49,7 +49,8 @@ public class SymmetricKeyDialog extends KeyDialog {
 
     private OctetSequenceKey jwk;
 
-    public SymmetricKeyDialog(PresenterStore presenters, OctetSequenceKey jwk) {
+    public SymmetricKeyDialog(JFrame parent, PresenterStore presenters, OctetSequenceKey jwk) {
+        super(parent);
         this.presenters = presenters;
         setContentPane(contentPane);
         setModal(true);

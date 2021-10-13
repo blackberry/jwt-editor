@@ -29,6 +29,8 @@ import javax.swing.event.DocumentListener;
  * View class for the Entry tab in standalone mode
  */
 public class EntryView {
+
+    private JFrame parent;
     private EntryPresenter presenter;
     private JPanel panel;
     private RSyntaxTextArea textAreaEntry;
@@ -38,7 +40,9 @@ public class EntryView {
 
     }
 
-    public EntryView(PresenterStore presenters) {
+    public EntryView(JFrame parent, PresenterStore presenters) {
+        this.parent = parent;
+
         // Initialise the presenter
         presenter = new EntryPresenter(this, presenters);
 
@@ -77,5 +81,14 @@ public class EntryView {
      */
     public void setText(String text) {
         textAreaEntry.setText(text);
+    }
+
+    /**
+     * Get the view's parent JFrame
+     * @return parent JFrame
+     */
+    @SuppressWarnings("unused")
+    public JFrame getParent() {
+        return parent;
     }
 }

@@ -50,7 +50,8 @@ public class EncryptDialog extends JDialog {
      * @param jws the JWS to sign
      * @param encryptionKeys the available encryption keys
      */
-    public EncryptDialog(JWS jws, List<Key> encryptionKeys) {
+    public EncryptDialog(JFrame parent, JWS jws, List<Key> encryptionKeys) {
+        super(parent);
         this.jws = jws;
 
         setContentPane(contentPane);
