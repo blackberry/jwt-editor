@@ -47,6 +47,7 @@ public class EditorView implements IMessageEditorTab {
 
     private IExtensionHelpers helpers;
     private EditorPresenter presenter;
+    private RstaFactory rstaFactory;
     private boolean editable;
     private int mode;
 
@@ -87,12 +88,13 @@ public class EditorView implements IMessageEditorTab {
 
     }
 
-    public EditorView(JFrame parent, PresenterStore presenters) {
-        this(parent, presenters, null, true);
+    public EditorView(JFrame parent, PresenterStore presenters, RstaFactory rstaFactory) {
+        this(parent, presenters, null, rstaFactory, true);
     }
 
-    public EditorView(JFrame parent, PresenterStore presenters, IExtensionHelpers helpers, boolean editable) {
+    public EditorView(JFrame parent, PresenterStore presenters, IExtensionHelpers helpers, RstaFactory rstaFactory, boolean editable) {
         this.parent = parent;
+        this.rstaFactory = rstaFactory;
 
         presenter = new EditorPresenter(this, presenters);
         this.helpers = helpers;
@@ -618,5 +620,9 @@ public class EditorView implements IMessageEditorTab {
         buttonAttack = new JButton();
         buttonAttack.setComponentPopupMenu(popupMenuAttack);
         buttonAttack.addActionListener(e -> onAttackClicked());
+        textAreaSerialized = rstaFactory.build();
+        textAreaJWEHeader = rstaFactory.build();
+        textAreaJWSHeader = rstaFactory.build();
+        textAreaPayload = rstaFactory.build();
     }
 }

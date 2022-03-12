@@ -22,6 +22,7 @@ import com.blackberry.jwteditor.presenter.PresenterStore;
 import com.blackberry.jwteditor.utils.Utils;
 import com.blackberry.jwteditor.model.keys.JWKKey;
 import com.blackberry.jwteditor.model.keys.Key;
+import com.blackberry.jwteditor.view.RstaFactory;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.OctetSequenceKey;
 import com.nimbusds.jose.jwk.gen.OctetSequenceKeyGenerator;
@@ -39,6 +40,9 @@ import java.util.UUID;
  * "New Symmetric Key" dialog for Keys tab
  */
 public class SymmetricKeyDialog extends KeyDialog {
+    private final RstaFactory rstaFactory;
+    private final Color textAreaKeyInitialBackgroundColor;
+    private final Color textAreaKeyInitialCurrentLineHighlightColor;
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
@@ -49,8 +53,9 @@ public class SymmetricKeyDialog extends KeyDialog {
 
     private OctetSequenceKey jwk;
 
-    public SymmetricKeyDialog(JFrame parent, PresenterStore presenters, OctetSequenceKey jwk) {
+    public SymmetricKeyDialog(JFrame parent, PresenterStore presenters, RstaFactory rstaFactory, OctetSequenceKey jwk) {
         super(parent);
+        this.rstaFactory = rstaFactory;
         this.presenters = presenters;
         setContentPane(contentPane);
         setModal(true);
@@ -100,6 +105,9 @@ public class SymmetricKeyDialog extends KeyDialog {
         };
         textAreaKey.getDocument().addDocumentListener(documentListener);
 
+        textAreaKeyInitialBackgroundColor = textAreaKey.getBackground();
+        textAreaKeyInitialCurrentLineHighlightColor = textAreaKey.getCurrentLineHighlightColor();
+
         // Set the key id and key value fields if provided
         if(jwk != null) {
             originalId = jwk.getKeyID();
@@ -112,8 +120,8 @@ public class SymmetricKeyDialog extends KeyDialog {
      */
     private void checkInput() {
         // Clear the error state. Disable OK while parsing
-        textAreaKey.setBackground(Color.WHITE);
-        textAreaKey.setCurrentLineHighlightColor(Color.WHITE);
+        textAreaKey.setBackground(textAreaKeyInitialBackgroundColor);
+        textAreaKey.setCurrentLineHighlightColor(textAreaKeyInitialCurrentLineHighlightColor);
         buttonOK.setEnabled(false);
         labelError.setText(" ");
         jwk = null;
@@ -190,4 +198,7 @@ public class SymmetricKeyDialog extends KeyDialog {
         dispose();
     }
 
+    private void createUIComponents() {
+        textAreaKey = rstaFactory.build();
+    }
 }
