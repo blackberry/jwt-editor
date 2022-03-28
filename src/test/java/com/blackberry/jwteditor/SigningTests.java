@@ -18,17 +18,19 @@ limitations under the License.
 
 package com.blackberry.jwteditor;
 
-import com.blackberry.jwteditor.utils.CryptoUtils;
-import com.blackberry.jwteditor.utils.PEMUtils;
-
 import com.blackberry.jwteditor.model.jose.JWS;
 import com.blackberry.jwteditor.model.keys.JWKKey;
 import com.blackberry.jwteditor.model.keys.Key;
 import com.blackberry.jwteditor.model.keys.PasswordKey;
+import com.blackberry.jwteditor.utils.CryptoUtils;
+import com.blackberry.jwteditor.utils.PEMUtils;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jose.jwk.*;
+import com.nimbusds.jose.jwk.ECKey;
+import com.nimbusds.jose.jwk.OctetKeyPair;
+import com.nimbusds.jose.jwk.OctetSequenceKey;
+import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.gen.OctetSequenceKeyGenerator;
 import com.nimbusds.jose.util.Base64URL;
 import org.junit.jupiter.api.Test;
@@ -115,17 +117,19 @@ public class SigningTests {
                 new OctetSequenceKeyGenerator(256).generate(),
                 new OctetSequenceKeyGenerator(384).generate(),
                 new OctetSequenceKeyGenerator(512).generate(),
+                new OctetSequenceKey.Builder("secret123".getBytes()).build(),
         };
 
         for(OctetSequenceKey octetSequenceKey: octetSequenceKeys){
             JWKKey key = new JWKKey(octetSequenceKey);
-            if(key.canSign()) {
-                for (JWSAlgorithm algorithm : key.getSigningAlgorithms()) {
-                    JWSHeader signingInfo = new JWSHeader.Builder(algorithm).build();
-                    JWS jws = CryptoUtils.sign(signingInfo.toBase64URL(), TEST_JWS.getEncodedPayload(), key, signingInfo);
-                    assertTrue(CryptoUtils.verify(jws, key, signingInfo));
-                    atLeastOne = true;
-                }
+            assertTrue(key.canSign()); //any key should be able to sign
+
+            for (JWSAlgorithm algorithm : key.getSigningAlgorithms()) {
+                JWSHeader signingInfo = new JWSHeader.Builder(algorithm).build();
+                JWS jws = CryptoUtils.sign(signingInfo.toBase64URL(), TEST_JWS.getEncodedPayload(), key, signingInfo);
+                //we should be able to sign and verify with any supported algorithm
+                assertTrue(CryptoUtils.verify(jws, key, signingInfo));
+                atLeastOne = true;
             }
         }
         assertTrue(atLeastOne);

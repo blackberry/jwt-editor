@@ -27,6 +27,7 @@ import com.nimbusds.jose.crypto.*;
 import com.nimbusds.jose.jwk.*;
 import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -142,22 +143,14 @@ public class JWKKey extends Key {
             case EC:
                 // Asymmetric signing requires a private key
                 return jwk.isPrivate();
+            case OCT:
+                return true;
             case OKP:
                 switch(((OctetKeyPair)jwk).getCurve().getStdName()){
                     // Signing with OKP requires an Edwards Curve private key
                     case "Ed25519": //NON-NLS
                     case "Ed448": //NON-NLS
                         return jwk.isPrivate();
-                    default:
-                        return false;
-                }
-            case OCT:
-                // nimbus-jose requires the key size to match the algorithm
-                switch(jwk.size()){
-                    case 256:
-                    case 384:
-                    case 512:
-                        return true;
                     default:
                         return false;
                 }
@@ -176,22 +169,13 @@ public class JWKKey extends Key {
         switch(keyType){
             case RSA:
             case EC:
+            case OCT:
                 return true;
             case OKP:
                 switch(((OctetKeyPair)jwk).getCurve().getStdName()){
                     // Verification with OKP requires an Edwards Curve key
                     case "Ed25519": //NON-NLS
                     case "Ed448": //NON-NLS
-                        return true;
-                    default:
-                        return false;
-                }
-            case OCT:
-                switch(jwk.size()){
-                    // nimbus-jose requires the key size to match the algorithm
-                    case 256:
-                    case 384:
-                    case 512:
                         return true;
                     default:
                         return false;
@@ -321,17 +305,11 @@ public class JWKKey extends Key {
                         return new JWSAlgorithm[0];
                 }
             case OCT:
-                switch(jwk.size()){
-                    // nimbus-jose requires the key size to match the algorithm
-                    case 256:
-                        return new JWSAlgorithm[]{JWSAlgorithm.HS256};
-                    case 384:
-                        return new JWSAlgorithm[]{JWSAlgorithm.HS384};
-                    case 512:
-                        return new JWSAlgorithm[]{JWSAlgorithm.HS512};
-                    default:
-                        return new JWSAlgorithm[0];
-                }
+                return new JWSAlgorithm[]{
+                        JWSAlgorithm.HS256,
+                        JWSAlgorithm.HS384,
+                        JWSAlgorithm.HS512
+                };
             default:
                 return new JWSAlgorithm[0];
         }
@@ -436,7 +414,10 @@ public class JWKKey extends Key {
             case OKP:
                 return new OKPSigner((OctetKeyPair) jwk);
             case OCT:
-                return new MACSigner(((OctetSequenceKey) jwk).toSecretKey().getEncoded());
+                byte[] key = ((OctetSequenceKey) jwk).toSecretKey().getEncoded();
+                //nimbus does not allow keys < 256 bits, so we can just pad them with zeroes to the maximum length of 512 bits
+                //due to how HMAC works, padding a key with zeroes does not affect the signature, but allows us to bypass the nimbus check
+                return new MACSigner(padZeroes(key, 64));
             case PASSWORD:
             default:
                 throw new IllegalStateException("Unreachable - handled by PasswordKey");
@@ -457,11 +438,22 @@ public class JWKKey extends Key {
             case OKP:
                 return new OKPVerifier((OctetKeyPair) jwk.toPublicJWK());
             case OCT:
-                return new MACVerifier(((OctetSequenceKey) jwk).toSecretKey().getEncoded());
+                byte[] key = ((OctetSequenceKey) jwk).toSecretKey().getEncoded();
+                //nimbus does not allow keys < 256 bits, but so we can just pad them with zeroes to the maximum length of 512 bits
+                //due to how HMAC works, padding a key with zeroes does not affect the signature, but allows us to bypass the nimbus check
+                return new MACVerifier(padZeroes(key, 64));
             case PASSWORD:
             default:
                 throw new IllegalStateException("Unreachable - handled by PasswordKey");
         }
+    }
+
+    private byte[] padZeroes(byte[] key, int length) {
+        if(key.length >= length) {
+            return key;
+        }
+
+        return Arrays.copyOf(key, length);
     }
 
     /**
