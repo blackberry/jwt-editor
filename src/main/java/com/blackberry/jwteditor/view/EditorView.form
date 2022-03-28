@@ -60,7 +60,7 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="61c9" class="org.fife.ui.rsyntaxtextarea.RSyntaxTextArea" binding="textAreaSerialized">
+                  <component id="61c9" class="org.fife.ui.rsyntaxtextarea.RSyntaxTextArea" binding="textAreaSerialized" custom-create="true">
                     <constraints/>
                     <properties>
                       <background color="-2631721"/>
@@ -148,7 +148,7 @@
                         <properties/>
                         <border type="none"/>
                         <children>
-                          <component id="1433b" class="org.fife.ui.rsyntaxtextarea.RSyntaxTextArea" binding="textAreaJWSHeader">
+                          <component id="1433b" class="org.fife.ui.rsyntaxtextarea.RSyntaxTextArea" binding="textAreaJWSHeader" custom-create="true">
                             <constraints/>
                             <properties>
                               <currentLineHighlightColor color="-1"/>
@@ -207,7 +207,7 @@
                         <properties/>
                         <border type="none"/>
                         <children>
-                          <component id="5efe9" class="org.fife.ui.rsyntaxtextarea.RSyntaxTextArea" binding="textAreaPayload">
+                          <component id="5efe9" class="org.fife.ui.rsyntaxtextarea.RSyntaxTextArea" binding="textAreaPayload" custom-create="true">
                             <constraints/>
                             <properties>
                               <currentLineHighlightColor color="-1"/>
@@ -287,7 +287,7 @@
                         <properties/>
                         <border type="none"/>
                         <children>
-                          <component id="5cc42" class="org.fife.ui.rsyntaxtextarea.RSyntaxTextArea" binding="textAreaJWEHeader">
+                          <component id="5cc42" class="org.fife.ui.rsyntaxtextarea.RSyntaxTextArea" binding="textAreaJWEHeader" custom-create="true">
                             <constraints/>
                             <properties>
                               <currentLineHighlightColor color="-1"/>

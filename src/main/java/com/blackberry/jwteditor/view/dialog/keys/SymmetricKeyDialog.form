@@ -122,7 +122,7 @@
                     <properties/>
                     <border type="none"/>
                     <children>
-                      <component id="99b6d" class="org.fife.ui.rsyntaxtextarea.RSyntaxTextArea" binding="textAreaKey">
+                      <component id="99b6d" class="org.fife.ui.rsyntaxtextarea.RSyntaxTextArea" binding="textAreaKey" custom-create="true">
                         <constraints/>
                         <properties>
                           <currentLineHighlightColor color="-1"/>

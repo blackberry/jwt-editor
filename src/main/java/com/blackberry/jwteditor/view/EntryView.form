@@ -15,7 +15,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="e9023" class="org.fife.ui.rsyntaxtextarea.RSyntaxTextArea" binding="textAreaEntry">
+          <component id="e9023" class="org.fife.ui.rsyntaxtextarea.RSyntaxTextArea" binding="textAreaEntry" custom-create="true">
             <constraints/>
             <properties>
               <currentLineHighlightColor color="-1"/>

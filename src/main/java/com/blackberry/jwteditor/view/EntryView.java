@@ -34,14 +34,16 @@ public class EntryView {
     private EntryPresenter presenter;
     private JPanel panel;
     private RSyntaxTextArea textAreaEntry;
+    private RstaFactory rstaFactory;
 
     @Deprecated
     public EntryView(){
 
     }
 
-    public EntryView(JFrame parent, PresenterStore presenters) {
+    public EntryView(JFrame parent, PresenterStore presenters, RstaFactory rstaFactory) {
         this.parent = parent;
+        this.rstaFactory = rstaFactory;
 
         // Initialise the presenter
         presenter = new EntryPresenter(this, presenters);
@@ -90,5 +92,9 @@ public class EntryView {
     @SuppressWarnings("unused")
     public JFrame getParent() {
         return parent;
+    }
+
+    private void createUIComponents() {
+        textAreaEntry = rstaFactory.build();
     }
 }

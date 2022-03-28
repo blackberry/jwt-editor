@@ -26,6 +26,7 @@ import com.blackberry.jwteditor.model.keys.PasswordKey;
 import com.blackberry.jwteditor.utils.PEMUtils;
 import com.blackberry.jwteditor.utils.Utils;
 import com.blackberry.jwteditor.view.KeysView;
+import com.blackberry.jwteditor.view.RstaFactory;
 import com.blackberry.jwteditor.view.dialog.keys.AsymmetricKeyDialog;
 import com.blackberry.jwteditor.view.dialog.keys.KeyDialog;
 import com.blackberry.jwteditor.view.dialog.keys.PasswordDialog;
@@ -46,6 +47,7 @@ public class KeysPresenter extends Presenter {
     private final KeysModel model;
     private final KeysView view;
     private final IBurpExtenderCallbacks callbacks;
+    private final RstaFactory rstaFactory;
     private final PresenterStore presenters;
 
     /**
@@ -54,10 +56,12 @@ public class KeysPresenter extends Presenter {
      * @param presenters the shared list of all presenters
      * @param callbacks Burp Suite callbacks (or null if standalone mode)
      * @param keysModel KeysModel to use (or null to create a new one)
+     * @param rstaFactory Factory to create RSyntaxTextArea
      */
-    public KeysPresenter(KeysView view, PresenterStore presenters, IBurpExtenderCallbacks callbacks, KeysModel keysModel) {
+    public KeysPresenter(KeysView view, PresenterStore presenters, IBurpExtenderCallbacks callbacks, KeysModel keysModel, RstaFactory rstaFactory) {
         this.view = view;
         this.callbacks = callbacks;
+        this.rstaFactory = rstaFactory;
 
         if(keysModel == null){
             model = new KeysModel();
@@ -84,13 +88,13 @@ public class KeysPresenter extends Presenter {
         if(key instanceof JWKKey) {
             JWK jwk = ((JWKKey) key).getJWK();
             if (jwk instanceof RSAKey) {
-                d = new AsymmetricKeyDialog(view.getParent(), presenters, (RSAKey) jwk);
+                d = new AsymmetricKeyDialog(view.getParent(), presenters, rstaFactory, (RSAKey) jwk);
             } else if (jwk instanceof ECKey) {
-                d = new AsymmetricKeyDialog(view.getParent(), presenters, (ECKey) jwk);
+                d = new AsymmetricKeyDialog(view.getParent(), presenters, rstaFactory, (ECKey) jwk);
             } else if (jwk instanceof OctetKeyPair) {
-                d = new AsymmetricKeyDialog(view.getParent(), presenters, (OctetKeyPair) jwk);
+                d = new AsymmetricKeyDialog(view.getParent(), presenters, rstaFactory, (OctetKeyPair) jwk);
             } else if (jwk instanceof OctetSequenceKey) {
-                d = new SymmetricKeyDialog(view.getParent(), presenters, (OctetSequenceKey) jwk);
+                d = new SymmetricKeyDialog(view.getParent(), presenters, rstaFactory, (OctetSequenceKey) jwk);
             } else {
                 return;
             }
@@ -172,28 +176,28 @@ public class KeysPresenter extends Presenter {
      * Handler for button clicks for new symmetric keys
      */
     public void onButtonNewSymmetricClick() {
-        onButtonNewClicked(new SymmetricKeyDialog(view.getParent(), presenters, null));
+        onButtonNewClicked(new SymmetricKeyDialog(view.getParent(), presenters, rstaFactory, null));
     }
 
     /**
      * Handler for button clicks for new RSA keys
      */
     public void onButtonNewRSAClick() {
-        onButtonNewClicked(new AsymmetricKeyDialog(view.getParent(), presenters, AsymmetricKeyDialog.Mode.RSA));
+        onButtonNewClicked(new AsymmetricKeyDialog(view.getParent(), presenters, rstaFactory, AsymmetricKeyDialog.Mode.RSA));
     }
 
     /**
      * Handler for button clicks for new EC keys
      */
     public void onButtonNewECClick() {
-        onButtonNewClicked(new AsymmetricKeyDialog(view.getParent(), presenters, AsymmetricKeyDialog.Mode.EC));
+        onButtonNewClicked(new AsymmetricKeyDialog(view.getParent(), presenters, rstaFactory, AsymmetricKeyDialog.Mode.EC));
     }
 
     /**
      * Handler for button clicks for new OKPs
      */
     public void onButtonNewOKPClick() {
-        onButtonNewClicked(new AsymmetricKeyDialog(view.getParent(), presenters, AsymmetricKeyDialog.Mode.OKP));
+        onButtonNewClicked(new AsymmetricKeyDialog(view.getParent(), presenters, rstaFactory, AsymmetricKeyDialog.Mode.OKP));
     }
 
     /**
