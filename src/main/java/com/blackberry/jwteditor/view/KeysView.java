@@ -60,14 +60,14 @@ public class KeysView implements ITab {
 
     }
 
-    public KeysView(JFrame parent, PresenterStore presenters, KeysModel keysModel){
-        this(parent, presenters, null, keysModel);
+    public KeysView(JFrame parent, PresenterStore presenters, KeysModel keysModel, RstaFactory rstaFactory){
+        this(parent, presenters, null, keysModel, rstaFactory);
     }
 
-    public KeysView(JFrame parent, PresenterStore presenters, IBurpExtenderCallbacks callbacks, KeysModel keysModel) {
+    public KeysView(JFrame parent, PresenterStore presenters, IBurpExtenderCallbacks callbacks, KeysModel keysModel, RstaFactory rstaFactory) {
         this.parent = parent;
         // Initialise the presenter
-        presenter = new KeysPresenter(this, presenters, callbacks, keysModel);
+        presenter = new KeysPresenter(this, presenters, callbacks, keysModel, rstaFactory);
 
         // Attach event handlers for button clicks
         buttonNewSymmetric.addActionListener(e -> presenter.onButtonNewSymmetricClick());

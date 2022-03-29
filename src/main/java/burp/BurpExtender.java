@@ -7,6 +7,8 @@ import com.blackberry.jwteditor.model.KeysModel;
 import com.blackberry.jwteditor.presenter.PresenterStore;
 import com.blackberry.jwteditor.view.EditorView;
 import com.blackberry.jwteditor.view.KeysView;
+import com.blackberry.jwteditor.view.RstaFactory;
+import com.blackberry.jwteditor.view.RstaFactory.BurpThemeAwareRstaFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,6 +23,7 @@ public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory, IH
     private IExtensionHelpers extensionHelpers;
     private PresenterStore presenters;
     private JFrame burp_frame;
+    private RstaFactory rstaFactory;
 
     public void registerExtenderCallbacks(IBurpExtenderCallbacks callbacks) {
         presenters = new PresenterStore();
@@ -47,8 +50,10 @@ public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory, IH
             }
         }
 
+        rstaFactory = new BurpThemeAwareRstaFactory(callbacks);
+
         // Create the Keys tab
-        KeysView keysView = new KeysView(burp_frame, presenters, callbacks, keysModel);
+        KeysView keysView = new KeysView(burp_frame, presenters, callbacks, keysModel, rstaFactory);
 
         // Save the helpers for use in the HTTP processing callback
         extensionHelpers = callbacks.getHelpers();
@@ -89,6 +94,6 @@ public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory, IH
 
     public IMessageEditorTab createNewInstance(IMessageEditorController controller, boolean editable) {
         // Create a new editor view when a HTTP message in Intercept/Repeater etc contains a JWE/JWS
-        return new EditorView(burp_frame, presenters, extensionHelpers, editable);
+        return new EditorView(burp_frame, presenters, extensionHelpers, rstaFactory, editable);
     }
 }

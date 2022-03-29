@@ -24,6 +24,7 @@ import com.blackberry.jwteditor.utils.Utils;
 import com.blackberry.jwteditor.utils.PEMUtils;
 import com.blackberry.jwteditor.model.keys.JWKKey;
 import com.blackberry.jwteditor.model.keys.Key;
+import com.blackberry.jwteditor.view.RstaFactory;
 import com.nimbusds.jose.jwk.*;
 import com.nimbusds.jose.jwk.gen.ECKeyGenerator;
 import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
@@ -43,6 +44,8 @@ import java.util.concurrent.ExecutionException;
  * "New RSA Key /EC Key /OKP " dialog for Keys tab
  */
 public class AsymmetricKeyDialog extends KeyDialog {
+    private Color textAreaKeyInitialBackgroundColor;
+    private Color textAreaKeyInitialCurrentLineHighlightColor;
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
@@ -68,27 +71,29 @@ public class AsymmetricKeyDialog extends KeyDialog {
     }
 
     private final Mode mode;
+    private final RstaFactory rstaFactory;
     private JWK jwk;
 
-    public AsymmetricKeyDialog(JFrame parent, PresenterStore presenters, RSAKey rsaKey){
-        this(parent, presenters, Mode.RSA, rsaKey);
+    public AsymmetricKeyDialog(JFrame parent, PresenterStore presenters, RstaFactory rstaFactory, RSAKey rsaKey){
+        this(parent, presenters, Mode.RSA, rstaFactory, rsaKey);
     }
 
-    public AsymmetricKeyDialog(JFrame parent, PresenterStore presenters, ECKey ecKey){
-        this(parent, presenters, Mode.EC, ecKey);
+    public AsymmetricKeyDialog(JFrame parent, PresenterStore presenters, RstaFactory rstaFactory, ECKey ecKey){
+        this(parent, presenters, Mode.EC, rstaFactory, ecKey);
     }
 
-    public AsymmetricKeyDialog(JFrame parent, PresenterStore presenters, OctetKeyPair octetKeyPair){
-        this(parent, presenters, Mode.OKP, octetKeyPair);
+    public AsymmetricKeyDialog(JFrame parent, PresenterStore presenters, RstaFactory rstaFactory, OctetKeyPair octetKeyPair){
+        this(parent, presenters, Mode.OKP, rstaFactory, octetKeyPair);
     }
 
-    public AsymmetricKeyDialog(JFrame parent, PresenterStore presenters, Mode mode){
-        this(parent, presenters, mode, null);
+    public AsymmetricKeyDialog(JFrame parent, PresenterStore presenters, RstaFactory rstaFactory, Mode mode){
+        this(parent, presenters, mode, rstaFactory, null);
     }
 
-    private AsymmetricKeyDialog(JFrame parent, PresenterStore presenters, Mode mode, JWK jwk) {
+    private AsymmetricKeyDialog(JFrame parent, PresenterStore presenters, Mode mode, RstaFactory rstaFactory, JWK jwk) {
         super(parent);
         this.mode = mode;
+        this.rstaFactory = rstaFactory;
         this.jwk = jwk;
         this.presenters = presenters;
 
@@ -169,7 +174,6 @@ public class AsymmetricKeyDialog extends KeyDialog {
         textAreaKey.getDocument().addDocumentListener(documentListener);
         textFieldKeyId.getDocument().addDocumentListener(documentListener);
 
-
         // If not in edit mode setting the contents of the text field before the window has opened causes the horizontal
         // scroll pane not to initialize properly, so do this after the window open event
         addWindowListener(new WindowAdapter() {
@@ -192,6 +196,11 @@ public class AsymmetricKeyDialog extends KeyDialog {
      * Check the contents of the text input
      */
     private void checkInput(){
+        if(textAreaKeyInitialBackgroundColor == null) {
+            textAreaKeyInitialBackgroundColor = textAreaKey.getBackground();
+            textAreaKeyInitialCurrentLineHighlightColor = textAreaKey.getCurrentLineHighlightColor();
+        }
+
         JWK tempJWK = null;
 
         // Get the text contents
@@ -199,9 +208,9 @@ public class AsymmetricKeyDialog extends KeyDialog {
 
         // Clear any error formatting
         setFormEnabled(true);
-        textAreaKey.setBackground(Color.WHITE);
-        textAreaKey.setCurrentLineHighlightColor(Color.WHITE);
-        textFieldKeyId.setBackground(Color.WHITE);
+        textAreaKey.setBackground(textAreaKeyInitialBackgroundColor);
+        textAreaKey.setCurrentLineHighlightColor(textAreaKeyInitialCurrentLineHighlightColor);
+        textFieldKeyId.setBackground(textAreaKeyInitialBackgroundColor);
         labelError.setText(" ");
 
         boolean keyError = false;
@@ -433,5 +442,9 @@ public class AsymmetricKeyDialog extends KeyDialog {
     private void onCancel() {
         jwk = null;
         dispose();
+    }
+
+    private void createUIComponents() {
+        textAreaKey = rstaFactory.build();
     }
 }

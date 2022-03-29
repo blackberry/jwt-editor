@@ -21,6 +21,7 @@ package com.blackberry.jwteditor.view;
 import com.blackberry.jwteditor.model.KeysModel;
 import com.blackberry.jwteditor.presenter.*;
 import com.blackberry.jwteditor.utils.Utils;
+import com.blackberry.jwteditor.view.RstaFactory.DefaultRstaFactory;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -82,8 +83,9 @@ public class StandaloneView {
      * Custom form initialisation
      */
     private void createUIComponents() {
-        entryView = new EntryView(parent, presenters);
-        editorView = new EditorView(parent, presenters);
+        RstaFactory rstaFactory = new DefaultRstaFactory();
+        entryView = new EntryView(parent, presenters, rstaFactory);
+        editorView = new EditorView(parent, presenters, rstaFactory);
 
         // Get the storage directory for the keystore (~/.jwt-editor) and create it if it doesn't exist
         Path keys_dir = Utils.getKeysDir();
@@ -107,7 +109,7 @@ public class StandaloneView {
             keysModel = new KeysModel();
         }
 
-        keysView = new KeysView(parent, presenters, keysModel);
+        keysView = new KeysView(parent, presenters, keysModel, rstaFactory);
     }
 
     /**
