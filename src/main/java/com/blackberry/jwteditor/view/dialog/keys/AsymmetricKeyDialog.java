@@ -36,6 +36,9 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
+import java.security.KeyStore;
+import java.security.Provider;
+import java.security.Security;
 import java.text.ParseException;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -367,16 +370,23 @@ public class AsymmetricKeyDialog extends KeyDialog {
                 // Generate a random key id
                 String kid = UUID.randomUUID().toString();
 
+                // Force using the BC provider, but fall-back to default if this fails
+                KeyStore keyStore = null;
+                Provider provider = Security.getProvider("BC");
+                if(provider != null){
+                    keyStore = KeyStore.getInstance(KeyStore.getDefaultType(), provider);
+                }
+
                 // Select the key generator and generate based on the dialog mode
                 switch(mode){
                     case EC:
                         //noinspection ConstantConditions
-                        return new ECKeyGenerator((Curve) parameters).keyID(kid).generate();
+                        return new ECKeyGenerator((Curve) parameters).keyStore(keyStore).keyID(kid).generate();
                     case RSA:
                         //noinspection ConstantConditions
-                        return new RSAKeyGenerator((Integer) parameters, true).keyID(kid).generate();
+                        return new RSAKeyGenerator((Integer) parameters, true).keyStore(keyStore).keyID(kid).generate();
                     case OKP:
-                        return new OKPGenerator((Curve) parameters).keyID(kid).generate();
+                        return new OKPGenerator((Curve) parameters).keyStore(keyStore).keyID(kid).generate();
                     default:
                         throw new IllegalStateException("Can't happen - invalid mode");
                 }

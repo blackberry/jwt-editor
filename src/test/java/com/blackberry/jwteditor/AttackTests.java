@@ -24,8 +24,10 @@ import com.blackberry.jwteditor.model.keys.Key;
 import com.blackberry.jwteditor.operations.Attacks;
 import com.blackberry.jwteditor.utils.CryptoUtils;
 import com.blackberry.jwteditor.utils.PEMUtils;
+import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.*;
+import com.nimbusds.jose.jwk.gen.OctetSequenceKeyGenerator;
 import org.junit.jupiter.api.Test;
 
 import java.text.ParseException;
@@ -72,15 +74,61 @@ public class AttackTests {
     }
 
     @Test
-    void testEmbeddedJWK() throws ParseException, Key.UnsupportedKeyException, CryptoUtils.SigningException {
+    // Test the Embedded JWK attack produces a known-good value
+    void testEmbeddedJWKKnown() throws ParseException, Key.UnsupportedKeyException, CryptoUtils.SigningException, NoSuchFieldException, IllegalAccessException {
         JWS jws = JWS.parse(HMAC_KEY_CONFUSION_JWS);
         JWKKey jwk = new JWKKey(JWK.parse(EMBEDDED_JWK_KEY));
 
         JWS modifiedJWS = Attacks.embeddedJWK(jws, jwk, JWSAlgorithm.RS256);
 
         assertEquals(modifiedJWS.serialize(), EMBEDDED_JWK_EXPECTED_JWS);
-
     }
 
+
+    @Test
+    // Test the Embedded JWK attack with all signing key types
+    void testEmbeddedJWKAll() throws ParseException, Key.UnsupportedKeyException, CryptoUtils.SigningException, JOSEException, PEMUtils.PemException, NoSuchFieldException, IllegalAccessException {
+        JWS jws = JWS.parse(HMAC_KEY_CONFUSION_JWS);
+
+        for (String pem : PEMToJWKTests.RSAPrivate) {
+            RSAKey rsaKey = PEMUtils.pemToRSAKey(pem);
+            JWKKey jwk = new JWKKey(rsaKey);
+            for (JWSAlgorithm alg : jwk.getSigningAlgorithms()) {
+                Attacks.embeddedJWK(jws, jwk, alg);
+            }
+        }
+
+        for (String pem : PEMToJWKTests.ECPrivate) {
+            ECKey ecKey = PEMUtils.pemToECKey(pem);
+            JWKKey jwk = new JWKKey(ecKey);
+            for (JWSAlgorithm alg : jwk.getSigningAlgorithms()) {
+                Attacks.embeddedJWK(jws, jwk, alg);
+            }
+        }
+
+        for (String pem : PEMToJWKTests.OKPPrivate) {
+            OctetKeyPair octetKeyPair = PEMUtils.pemToOctetKeyPair(pem);
+            JWKKey jwk = new JWKKey(octetKeyPair);
+            for (JWSAlgorithm alg : jwk.getSigningAlgorithms()) {
+                Attacks.embeddedJWK(jws, jwk, alg);
+            }
+        }
+
+        OctetSequenceKey[] octetSequenceKeys = new OctetSequenceKey[]{
+                new OctetSequenceKeyGenerator(128).generate(),
+                new OctetSequenceKeyGenerator(192).generate(),
+                new OctetSequenceKeyGenerator(256).generate(),
+                new OctetSequenceKeyGenerator(384).generate(),
+                new OctetSequenceKeyGenerator(512).generate(),
+                new OctetSequenceKey.Builder("secret123".getBytes()).build(),
+        };
+
+        for(OctetSequenceKey octetSequenceKey: octetSequenceKeys) {
+            JWKKey jwk = new JWKKey(octetSequenceKey);
+            for (JWSAlgorithm alg : jwk.getSigningAlgorithms()) {
+                Attacks.embeddedJWK(jws, jwk, alg);
+            }
+        }
+    }
 
 }

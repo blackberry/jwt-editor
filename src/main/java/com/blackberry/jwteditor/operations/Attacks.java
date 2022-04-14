@@ -31,6 +31,8 @@ import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.OctetSequenceKey;
 import com.nimbusds.jose.util.Base64URL;
 
+import java.lang.reflect.Field;
+
 /**
  * Implementations of common JWS attacks
  */
@@ -90,13 +92,19 @@ public class Attacks {
      * @return a JWS with embedded JWK
      * @throws CryptoUtils.SigningException if signing fails
      */
-    public static JWS embeddedJWK(JWS jws, JWKKey key, JWSAlgorithm algorithm) throws CryptoUtils.SigningException {
+    public static JWS embeddedJWK(JWS jws, JWKKey key, JWSAlgorithm algorithm) throws CryptoUtils.SigningException, NoSuchFieldException, IllegalAccessException {
         JWK embeddedKey = key.isPublic() ? key.getJWK().toPublicJWK() : key.getJWK();
-        JWSHeader jwsHeader = new JWSHeader.Builder(algorithm)
+        JWSHeader.Builder jwsHeaderBuilder = new JWSHeader.Builder(algorithm)
                 .type(JOSEObjectType.JWT)
-                .jwk(embeddedKey)
-                .keyID(key.getID())
-                .build();
+                .keyID(key.getID());
+
+        // nimbus-jose-jwt adds a check to jwk() to prevent embedding private keys in 9.21
+        // We need to do this, so bypass the check using reflection
+        Field f = jwsHeaderBuilder.getClass().getDeclaredField("jwk"); //NON-NLS
+        f.setAccessible(true);
+        f.set(jwsHeaderBuilder, embeddedKey);
+
+        JWSHeader jwsHeader = jwsHeaderBuilder.build();
 
         return CryptoUtils.sign(jwsHeader.toBase64URL(), jws.getEncodedPayload(), key, jwsHeader);
     }

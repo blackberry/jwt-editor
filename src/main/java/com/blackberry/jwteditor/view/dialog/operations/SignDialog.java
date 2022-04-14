@@ -146,7 +146,7 @@ public class SignDialog extends JDialog {
             else if (mode == Mode.EMBED_JWK) {
                 jws = Attacks.embeddedJWK(jws, selectedKey, selectedAlgorithm);
             }
-        } catch (CryptoUtils.SigningException e) {
+        } catch (CryptoUtils.SigningException | NoSuchFieldException | IllegalAccessException e) {
             jws = null;
             JOptionPane.showMessageDialog(this, e.getMessage(), Utils.getResourceString("error_title_unable_to_sign"), JOptionPane.WARNING_MESSAGE);
         }

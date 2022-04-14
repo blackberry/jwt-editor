@@ -23,9 +23,7 @@ import com.blackberry.jwteditor.utils.Utils;
 import com.blackberry.jwteditor.model.keys.JWKKey;
 import com.blackberry.jwteditor.model.keys.Key;
 import com.blackberry.jwteditor.view.RstaFactory;
-import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.OctetSequenceKey;
-import com.nimbusds.jose.jwk.gen.OctetSequenceKeyGenerator;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 import javax.swing.*;
@@ -33,6 +31,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
+import java.security.SecureRandom;
 import java.text.ParseException;
 import java.util.UUID;
 
@@ -46,7 +45,7 @@ public class SymmetricKeyDialog extends KeyDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
-    private JComboBox<Integer> comboBoxKeySize;
+    private JSpinner spinnerKeySize;
     private JButton buttonGenerate;
     private RSyntaxTextArea textAreaKey;
     private JLabel labelError;
@@ -78,14 +77,24 @@ public class SymmetricKeyDialog extends KeyDialog {
 
         setTitle(Utils.getResourceString("keys_new_title_symmetric"));
 
-        // Initialise the key size combobox with key length values
-        comboBoxKeySize.setModel(new DefaultComboBoxModel<>(new Integer[]{
-                128,
-                192,
-                256,
-                384,
-                512
-        }));
+        spinnerKeySize.setModel(new SpinnerNumberModel(128, 0, null, 8));
+
+        spinnerKeySize.addChangeListener(e -> {
+
+            // Round any manually entered values up to the nearest number of bytes
+            int value = (int) spinnerKeySize.getValue();
+
+            // If 0 is set, force it to be rounded up to 8
+            if(value == 0){
+                value = 1;
+            }
+
+            int remainder = value % 8;
+
+            if(remainder != 0) {
+                spinnerKeySize.setValue(value + remainder);
+            }
+        });
 
         // Attach event listeners for Generate button and text entry changing
         buttonGenerate.addActionListener(e -> generate());
@@ -157,19 +166,20 @@ public class SymmetricKeyDialog extends KeyDialog {
      * Event handler for the generate button
      */
     private void generate() {
-        try {
-            // Generate a random 'kid'
-            String keyId = UUID.randomUUID().toString();
+        // Generate a random 'kid'
+        String keyId = UUID.randomUUID().toString();
 
-            // Generate a new symmetric key based on the key size selected in the combobox
-            //noinspection ConstantConditions
-            OctetSequenceKey octetSequenceKey = new OctetSequenceKeyGenerator((Integer) comboBoxKeySize.getSelectedItem()).keyID(keyId).generate();
+        // Generate a new symmetric key based on the key size selected in the combobox
+        byte[] key = new byte[(int) spinnerKeySize.getValue() / 8];
+        SecureRandom rng = new SecureRandom();
+        rng.nextBytes(key);
 
-            // Set the text area contents to the JSON form of the newly generated key
-            textAreaKey.setText(Utils.prettyPrintJSON(octetSequenceKey.toJSONString()));
-        } catch (JOSEException e) {
-            e.printStackTrace();
-        }
+        // Create the OctetSequenceKey from the bytes
+        // Use the Builder directly to skip length checks - the spinner model enforces these
+        OctetSequenceKey octetSequenceKey = new OctetSequenceKey.Builder(key).keyID(keyId).build();
+
+        // Set the text area contents to the JSON form of the newly generated key
+        textAreaKey.setText(Utils.prettyPrintJSON(octetSequenceKey.toJSONString()));
     }
 
     /**

@@ -296,7 +296,6 @@ public class JWKKey extends Key {
                         return new JWSAlgorithm[]{JWSAlgorithm.ES512};
                 }
             case OKP:
-                //noinspection ConstantConditions
                 switch(((OctetKeyPair) jwk).getCurve().getStdName()){
                     case "Ed25519": //NON-NLS
                     case "Ed448": //NON-NLS
