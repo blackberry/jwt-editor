@@ -25,6 +25,8 @@ import com.nimbusds.jose.*;
 import com.nimbusds.jose.util.Base64URL;
 
 import java.nio.charset.StandardCharsets;
+import java.security.Provider;
+import java.security.Security;
 import java.text.ParseException;
 
 /**
@@ -77,6 +79,12 @@ public class CryptoUtils {
             throw new SigningException(e.getMessage());
         }
 
+        // Try to use the BouncyCastle provider, but fall-back to default if this fails
+        Provider provider = Security.getProvider("BC");
+        if(provider != null){
+            signer.getJCAContext().setProvider(provider);
+        }
+
         // Build the signing input
         // JWS signature input is the ASCII bytes of the base64 encoded header and payload concatenated with a '.'
         byte[] headerBytes = header.toString().getBytes(StandardCharsets.US_ASCII);
@@ -110,11 +118,17 @@ public class CryptoUtils {
     public static boolean verify(JWS jws, Key key, JWSHeader verificationInfo) throws VerificationException {
 
         // Get the verifier based on the key type
-        JWSVerifier jwsVerifier;
+        JWSVerifier verifier;
         try{
-            jwsVerifier = key.getVerifier();
+            verifier = key.getVerifier();
         } catch (JOSEException e) {
             throw new VerificationException(e.getMessage());
+        }
+
+        // Try to use the BouncyCastle provider, but fall-back to default if this fails
+        Provider provider = Security.getProvider("BC");
+        if(provider != null){
+            verifier.getJCAContext().setProvider(provider);
         }
 
         // Build the signing input
@@ -128,7 +142,7 @@ public class CryptoUtils {
 
         // Verify the payload with the key and the algorithm provided
         try {
-            return jwsVerifier.verify(verificationInfo, signingInput, jws.getEncodedSignature());
+            return verifier.verify(verificationInfo, signingInput, jws.getEncodedSignature());
         } catch (JOSEException e) {
             throw new VerificationException(e.getMessage());
         }
@@ -152,6 +166,12 @@ public class CryptoUtils {
              encrypter = key.getEncrypter(kek);
         } catch (JOSEException e) {
             throw new EncryptionException("Invalid key type for encryption algorithm");
+        }
+
+        // Try to use the BouncyCastle provider, but fall-back to default if this fails
+        Provider provider = Security.getProvider("BC");
+        if(provider != null){
+            encrypter.getJCAContext().setProvider(provider);
         }
 
         // Encrypt the JWS with the key to get a set of Base64 encoded parts
@@ -187,6 +207,12 @@ public class CryptoUtils {
         try {
             // Create a new decrypter with the header algs
             JWEDecrypter decrypter = key.getDecrypter(header.getAlgorithm());
+
+            // Try to use the BouncyCastle provider, but fall-back to default if this fails
+            Provider provider = Security.getProvider("BC");
+            if(provider != null){
+                decrypter.getJCAContext().setProvider(provider);
+            }
 
             // Get the encrypted key component, or null if "dir" encryption
             Base64URL encryptedKey = jwe.getEncodedEncryptedKey();
