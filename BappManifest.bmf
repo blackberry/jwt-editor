@@ -2,12 +2,12 @@ Uuid: 26aaa5ded2f74beea19e2ed8345a93dd
 ExtensionType: 1
 Name: JWT Editor
 RepoName: jwt-editor
-ScreenVersion: 1.0
-SerialVersion: 2
+ScreenVersion: 1.1.0
+SerialVersion: 4
 MinPlatformVersion: 0
 ProOnly: False
 Author: Fraser Winterborn, BlackBerry Security Research Group
 ShortDescription: Edit, sign, verify, encrypt and decrypt JSON Web Tokens (JWTs).
-EntryPoint: target/jwt-editor-1.0.0-jar-with-dependencies.jar
+EntryPoint: target/jwt-editor-1.1.0-jar-with-dependencies.jar
 BuildCommand: mvn package -DskipTests=true -Dmaven.javadoc.skip=true -B
 SupportedProducts: Pro, Community
