@@ -121,6 +121,7 @@ public class SymmetricKeyDialog extends KeyDialog {
         if(jwk != null) {
             originalId = jwk.getKeyID();
             textAreaKey.setText(Utils.prettyPrintJSON(jwk.toJSONString()));
+            spinnerKeySize.setValue(jwk.size());
         }
     }
 

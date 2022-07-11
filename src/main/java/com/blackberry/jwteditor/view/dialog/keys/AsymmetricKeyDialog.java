@@ -125,7 +125,7 @@ public class AsymmetricKeyDialog extends KeyDialog {
 
         // Set the window title and key combobox options based on the key type
         switch (mode){
-            case EC:
+            case EC: {
                 setTitle(Utils.getResourceString("keys_new_title_ec"));
                 comboBoxKeySize.setModel(new DefaultComboBoxModel<>(new Curve[]{
                         Curve.P_256,
@@ -133,26 +133,41 @@ public class AsymmetricKeyDialog extends KeyDialog {
                         Curve.P_384,
                         Curve.P_521
                 }));
+
+                Curve selectedCurve = jwk == null ? Curve.P_256 : ((ECKey) jwk).getCurve();
+                comboBoxKeySize.setSelectedItem(selectedCurve);
+
                 break;
-            case RSA:
+            }
+
+            case RSA: {
                 setTitle(Utils.getResourceString("keys_new_title_rsa"));
-                comboBoxKeySize.setModel(new DefaultComboBoxModel<>(new Integer[] {
+                comboBoxKeySize.setModel(new DefaultComboBoxModel<>(new Integer[]{
                         512,
                         1024,
                         2048,
                         3072,
                         4096
                 }));
-                comboBoxKeySize.setSelectedItem(2048);
+
+                int selectedKeySize = jwk == null ? 2048 : jwk.size();
+                comboBoxKeySize.setSelectedItem(selectedKeySize);
+
                 break;
-            case OKP:
+            }
+
+            case OKP: {
                 setTitle(Utils.getResourceString("keys_new_title_okp"));
-                comboBoxKeySize.setModel(new DefaultComboBoxModel<>(new Curve[] {
-                    Curve.X25519,
-                    Curve.Ed25519,
-                    Curve.X448,
-                    Curve.Ed448,
+                comboBoxKeySize.setModel(new DefaultComboBoxModel<>(new Curve[]{
+                        Curve.X25519,
+                        Curve.Ed25519,
+                        Curve.X448,
+                        Curve.Ed448,
                 }));
+
+                Curve selectedCurve = jwk == null ? Curve.X25519 : ((OctetKeyPair) jwk).getCurve();
+                comboBoxKeySize.setSelectedItem(selectedCurve);
+            }
         }
 
         // Add event listeners for the generate button being pressed, the key format radio button changing, or the text
