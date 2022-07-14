@@ -37,8 +37,14 @@ import java.util.List;
 public class SignDialog extends JDialog {
 
     public enum Mode {
-        NORMAL,
-        EMBED_JWK
+        NORMAL("sign_dialog_title"),
+        EMBED_JWK("embed_jwk_attack_dialog_title");
+
+        private final String titleResourceId;
+
+        Mode(String titleResourceId) {
+            this.titleResourceId = titleResourceId;
+        }
     }
 
     private JPanel contentPane;
@@ -69,6 +75,8 @@ public class SignDialog extends JDialog {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
+
+        setTitle(Utils.getResourceString(mode.titleResourceId));
 
         buttonOK.addActionListener(e -> onOK());
 
@@ -160,5 +168,4 @@ public class SignDialog extends JDialog {
     private void onCancel() {
         dispose();
     }
-
 }
