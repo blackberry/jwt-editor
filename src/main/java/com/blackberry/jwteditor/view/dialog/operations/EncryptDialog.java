@@ -58,6 +58,8 @@ public class EncryptDialog extends JDialog {
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
 
+        setTitle(Utils.getResourceString("encrypt_dialog_title"));
+
         buttonOK.addActionListener(e -> onOK());
 
         buttonCancel.addActionListener(e -> onCancel());

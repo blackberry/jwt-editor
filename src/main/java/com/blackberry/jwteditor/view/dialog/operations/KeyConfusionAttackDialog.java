@@ -42,7 +42,6 @@ public class KeyConfusionAttackDialog extends JDialog {
     private JComboBox<JWSAlgorithm> comboBoxSigningAlgorithm;
     private JCheckBox checkBoxTrailingNewline;
 
-
     private JWS jws;
 
     /**
@@ -57,6 +56,8 @@ public class KeyConfusionAttackDialog extends JDialog {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
+
+        setTitle(Utils.getResourceString("key_confusion_attack_dialog_title"));
 
         buttonOK.addActionListener(e -> onOK());
 
@@ -111,7 +112,6 @@ public class KeyConfusionAttackDialog extends JDialog {
      * Called when the Cancel or X button is pressed. Destroy the window
      */
     private void onCancel() {
-        // add your code here if necessary
         dispose();
     }
 
@@ -122,5 +122,4 @@ public class KeyConfusionAttackDialog extends JDialog {
     public JWS getJWS(){
         return jws;
     }
-
 }
