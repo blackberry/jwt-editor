@@ -29,6 +29,7 @@ import com.blackberry.jwteditor.model.keys.Key;
 import com.blackberry.jwteditor.view.EditorView;
 import com.blackberry.jwteditor.view.dialog.operations.EncryptDialog;
 import com.blackberry.jwteditor.view.dialog.operations.KeyConfusionAttackDialog;
+import com.blackberry.jwteditor.view.dialog.operations.NoneDialog;
 import com.blackberry.jwteditor.view.dialog.operations.SignDialog;
 import com.nimbusds.jose.util.Base64URL;
 import org.apache.commons.lang3.StringUtils;
@@ -306,12 +307,20 @@ public class EditorPresenter extends Presenter {
     }
 
     /**
-     * Handle clicks events from the HMAC Key Confusion button
+     * Handle clicks events from the none Signing algorithm button
      */
     public void onAttackSignNoneClicked() {
         // Get the JWS from the editor, strip the signature and set the editor to the new JWS
-        JWS jws = getJWS();
-        setJWS(Attacks.noneSigning(jws));
+        NoneDialog noneDialog = new NoneDialog(view.getParent(), getJWS());
+        noneDialog.pack();
+        noneDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(view.getUiComponent()));
+        noneDialog.setVisible(true);
+
+        JWS unsignedJWS = noneDialog.getJWS();
+
+        if (unsignedJWS != null) {
+            setJWS(unsignedJWS);
+        }
     }
 
     /**
