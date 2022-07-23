@@ -27,10 +27,12 @@ import com.blackberry.jwteditor.presenter.PresenterStore;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import java.util.List;
 import java.util.ArrayList;
 
 /**
@@ -57,7 +59,6 @@ public class KeysView implements ITab {
 
     @Deprecated
     public KeysView(){
-
     }
 
     public KeysView(JFrame parent, PresenterStore presenters, KeysModel keysModel, RstaFactory rstaFactory){
@@ -77,29 +78,35 @@ public class KeysView implements ITab {
         buttonNewPassword.addActionListener(e -> presenter.onButtonNewPasswordClick());
     }
 
+    private enum KeysTableColumns {
+        ID("id", 30, String.class),
+        TYPE("type", 10, String.class),
+        PUBLIC_KEY("public_key", 10, Boolean.class),
+        PRIVATE_KEY("private_key", 10, Boolean.class),
+        SIGNING("signing", 10, Boolean.class),
+        VERIFICATION("verification", 10, Boolean.class),
+        ENCRYPTION("encryption", 10, Boolean.class),
+        DECRYPTION("decryption", 10, Boolean.class);
+
+        final String label;
+        final int widthPercentage;
+        final Class<?> type;
+
+        KeysTableColumns(String labelResourceId, int widthPercentage, Class<?> type) {
+            this.label = Utils.getResourceString(labelResourceId);
+            this.widthPercentage = widthPercentage;
+            this.type = type;
+        }
+    }
+
     /**
      * Model for the keys table
      */
-    public static class KeysTableModel extends AbstractTableModel{
+    public static class KeysTableModel extends AbstractTableModel {
 
-        final String[] columns = new String[]{
-                Utils.getResourceString("id"),
-                Utils.getResourceString("type"),
-                Utils.getResourceString("public_key"),
-                Utils.getResourceString("private_key"),
-                Utils.getResourceString("signing"),
-                Utils.getResourceString("verification"),
-                Utils.getResourceString("encryption"),
-                Utils.getResourceString("decryption")
-        };
+        private final List<Object[]> data = new ArrayList<>();
 
-        private final ArrayList<Object[]> data;
-
-        public KeysTableModel(){
-            data = new ArrayList<>();
-        }
-
-        public void addRow(Object[] row){
+        public void addRow(Object[] row) {
             data.add(row);
         }
 
@@ -110,7 +117,7 @@ public class KeysView implements ITab {
 
         @Override
         public int getColumnCount() {
-            return columns.length;
+            return KeysTableColumns.values().length;
         }
 
         @Override
@@ -120,25 +127,12 @@ public class KeysView implements ITab {
 
         @Override
         public String getColumnName(int column) {
-            return columns[column];
+            return KeysTableColumns.values()[column].label;
         }
 
         @Override
         public Class<?> getColumnClass(int columnIndex) {
-            switch (columnIndex){
-                case 0:
-                case 1:
-                    return String.class;
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                case 6:
-                case 7:
-                    return Boolean.class;
-                default:
-                    return null;
-            }
+            return KeysTableColumns.values()[columnIndex].type;
         }
     }
 
@@ -146,7 +140,7 @@ public class KeysView implements ITab {
      * Class for the right-click popup menu
      */
     private class JTablePopup extends JTable {
-        private Integer popupRow = null;
+        private Integer popupRow;
 
         @Override
         public JPopupMenu getComponentPopupMenu() {
@@ -241,6 +235,13 @@ public class KeysView implements ITab {
             }
         });
 
+        // Resize the table columns on initial paint
+        tableKeys.addHierarchyListener(new OneTimeColumnResizeHierarchyListener(tableKeys));
+
+        // Decorate existing BooleanRenderer to perform alternateRow highlighting
+        TableCellRenderer booleanCellRender = tableKeys.getDefaultRenderer(Boolean.class);
+        tableKeys.setDefaultRenderer(Boolean.class, new AlternateRowBackgroundDecoratingTableCellRenderer(booleanCellRender));
+
         // Create the right-click menu
         JPopupMenu popupMenu = new JPopupMenu();
 
@@ -306,4 +307,55 @@ public class KeysView implements ITab {
         return parent;
     }
 
+    private static class OneTimeColumnResizeHierarchyListener implements HierarchyListener
+    {
+        private final JTable table;
+
+        private OneTimeColumnResizeHierarchyListener(JTable table) {
+            this.table = table;
+        }
+
+        @Override
+        public void hierarchyChanged(HierarchyEvent e) {
+            if (e.getChangeFlags() != HierarchyEvent.SHOWING_CHANGED || !e.getComponent().isShowing()) {
+                return;
+            }
+
+            int width = table.getWidth();
+            TableColumnModel columnModel = table.getColumnModel();
+            KeysTableColumns[] values = KeysTableColumns.values();
+
+            for (int i = 0; i < values.length; i++) {
+                KeysTableColumns tableColumns = values[i];
+                TableColumn column = columnModel.getColumn(i);
+                int preferredWidth = (int) (tableColumns.widthPercentage * 0.01 * width);
+                column.setPreferredWidth(preferredWidth);
+            }
+
+            table.removeHierarchyListener(this);
+        }
+    }
+
+    private static class AlternateRowBackgroundDecoratingTableCellRenderer implements TableCellRenderer
+    {
+        private final TableCellRenderer tableCellRenderer;
+
+        AlternateRowBackgroundDecoratingTableCellRenderer(TableCellRenderer tableCellRenderer) {
+            this.tableCellRenderer = tableCellRenderer;
+        }
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component component = tableCellRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+            if (!isSelected && !hasFocus) {
+                Color alternateRowColor = UIManager.getColor("Table.alternateRowColor");
+
+                if (alternateRowColor != null && row % 2 != 0) {
+                     component.setBackground(alternateRowColor);
+                }
+            }
+
+            return component;
+        }
+    }
 }
