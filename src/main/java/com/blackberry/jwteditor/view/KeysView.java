@@ -242,6 +242,10 @@ public class KeysView implements ITab {
         TableCellRenderer booleanCellRender = tableKeys.getDefaultRenderer(Boolean.class);
         tableKeys.setDefaultRenderer(Boolean.class, new AlternateRowBackgroundDecoratingTableCellRenderer(booleanCellRender));
 
+        // Decorate existing renderer to add additional row height
+        TableCellRenderer stringCellRender = tableKeys.getDefaultRenderer(String.class);
+        tableKeys.setDefaultRenderer(String.class, new RowHeightHeightDecoratingTableCellRenderer(stringCellRender));
+
         // Create the right-click menu
         JPopupMenu popupMenu = new JPopupMenu();
 
@@ -307,8 +311,7 @@ public class KeysView implements ITab {
         return parent;
     }
 
-    private static class OneTimeColumnResizeHierarchyListener implements HierarchyListener
-    {
+    private static class OneTimeColumnResizeHierarchyListener implements HierarchyListener {
         private final JTable table;
 
         private OneTimeColumnResizeHierarchyListener(JTable table) {
@@ -336,8 +339,7 @@ public class KeysView implements ITab {
         }
     }
 
-    private static class AlternateRowBackgroundDecoratingTableCellRenderer implements TableCellRenderer
-    {
+    private static class AlternateRowBackgroundDecoratingTableCellRenderer implements TableCellRenderer {
         private final TableCellRenderer tableCellRenderer;
 
         AlternateRowBackgroundDecoratingTableCellRenderer(TableCellRenderer tableCellRenderer) {
@@ -353,6 +355,27 @@ public class KeysView implements ITab {
                 if (alternateRowColor != null && row % 2 != 0) {
                      component.setBackground(alternateRowColor);
                 }
+            }
+
+            return component;
+        }
+    }
+
+    private static class RowHeightHeightDecoratingTableCellRenderer implements TableCellRenderer {
+        private static final int ADDITIONAL_HEIGHT_PIXELS = 5;
+
+        private final TableCellRenderer tableCellRenderer;
+
+        RowHeightHeightDecoratingTableCellRenderer(TableCellRenderer tableCellRenderer) {
+            this.tableCellRenderer = tableCellRenderer;
+        }
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component component = tableCellRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            int componentHeight = component.getPreferredSize().height;
+
+            if (table.getRowHeight() != componentHeight + ADDITIONAL_HEIGHT_PIXELS) {
+                table.setRowHeight(componentHeight + ADDITIONAL_HEIGHT_PIXELS);
             }
 
             return component;
