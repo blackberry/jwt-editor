@@ -244,7 +244,7 @@ public class KeysView implements ITab {
 
         // Decorate existing renderer to add additional row height
         TableCellRenderer stringCellRender = tableKeys.getDefaultRenderer(String.class);
-        tableKeys.setDefaultRenderer(String.class, new RowHeightHeightDecoratingTableCellRenderer(stringCellRender));
+        tableKeys.setDefaultRenderer(String.class, new RowHeightDecoratingTableCellRenderer(stringCellRender));
 
         // Create the right-click menu
         JPopupMenu popupMenu = new JPopupMenu();
@@ -361,12 +361,12 @@ public class KeysView implements ITab {
         }
     }
 
-    private static class RowHeightHeightDecoratingTableCellRenderer implements TableCellRenderer {
+    private static class RowHeightDecoratingTableCellRenderer implements TableCellRenderer {
         private static final int ADDITIONAL_HEIGHT_PIXELS = 5;
 
         private final TableCellRenderer tableCellRenderer;
 
-        RowHeightHeightDecoratingTableCellRenderer(TableCellRenderer tableCellRenderer) {
+        RowHeightDecoratingTableCellRenderer(TableCellRenderer tableCellRenderer) {
             this.tableCellRenderer = tableCellRenderer;
         }
 
